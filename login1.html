@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Register Modern</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1f2937, #111827);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 15px;
+            width: 320px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px 40px;
+            border: none;
+            border-radius: 10px;
+            outline: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 14px;
+            display: block;
+        }
+
+        .input-group i {
+            position: absolute;
+            top: 50%;
+            left: 12px;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #2563eb;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .toggle {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #93c5fd;
+            cursor: pointer;
+        }
+
+        /* Animasi slide + fade */
+        .form-box {
+            transition: transform 0.5s ease, opacity 0.5s ease;
+        }
+
+        .slide-left {
+            transform: translateX(-50%);
+            opacity: 0;
+        }
+
+        .slide-right {
+            transform: translateX(50%);
+            opacity: 0;
+        }
+
+        /* Animasi masuk */
+        .slide-in {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div id="form-box" class="form-box slide-in">
+            <h2 id="form-title">Login</h2>
+
+            <div class="input-group">
+                <i class="fa fa-user"></i>
+                <input type="text" id="username" placeholder="Username">
+            </div>
+
+            <div class="input-group">
+                <i class="fa fa-lock"></i>
+                <input type="password" id="password" placeholder="Password">
+            </div>
+
+            <button onclick="submitForm()">Login</button>
+            <div class="toggle" onclick="toggleForm()">Belum punya akun? Register</div>
+        </div>
+    </div>
+
+    <script>
+        let isLogin = true;
+        const accounts = JSON.parse(localStorage.getItem("accounts")) || [];
+
+        function toggleForm() {
+            const formBox = document.getElementById("form-box");
+
+            // Animasi keluar
+            formBox.classList.remove("slide-in");
+            formBox.classList.add(isLogin ? "slide-left" : "slide-right");
+
+            setTimeout(() => {
+                isLogin = !isLogin;
+                document.getElementById("form-title").innerText = isLogin ? "Login" : "Register";
+                document.querySelector("button").innerText = isLogin ? "Login" : "Register";
+                document.querySelector(".toggle").innerText = isLogin
+                    ? "Belum punya akun? Register"
+                    : "Sudah punya akun? Login";
+                document.getElementById("username").value = "";
+                document.getElementById("password").value = "";
+
+                // Ganti animasi masuk
+                formBox.classList.remove("slide-left", "slide-right");
+                formBox.classList.add("slide-in");
+            }, 400);
+        }
+
+        function submitForm() {
+            const username = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value.trim();
+
+            if (!username || !password) {
+                alert("Harap isi semua field!");
+                return;
+            }
+
+            if (isLogin) {
+                const user = accounts.find(acc => acc.username === username && acc.password === password);
+                if (user) {
+                    alert("Login berhasil!");
+                    window.location.href = "login.html"; // Ganti ke halaman tujuan
+                } else {
+                    alert("Username atau password salah!");
+                }
+            } else {
+                if (accounts.some(acc => acc.username === username)) {
+                    alert("Username sudah terdaftar!");
+                    return;
+                }
+                accounts.push({ username, password });
+                localStorage.setItem("accounts", JSON.stringify(accounts));
+                alert("Registrasi berhasil!");
+
+                // Setelah register → langsung ke login
+                toggleForm();
+            }
+        }
+    </script>
+
+</body>
+
+</html>
